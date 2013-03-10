@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>EOL Manual Page</title>
+    <style type="text/css">
+        body { margin: 4em 8% 50% 8%; max-width: 40em; }
+        pre  { margin-left: 4ex; }
+    </style>
+</head>
+
+<body>
+<h1>EOL Manual Page</h1>
+
+<h2>Name</h2>
+<p>eol &mdash; Convert/filter end-of-line sequences</p>
+
+<h2>Synopsis</h2>
+<p><kbd>eol [<var>eol string</var>]</kbd></p>
+
+<h2>Description</h2>
+
+<p><kbd>eol</kbd> is a filter that reads lines from the input stream and
+writes them to the output stream with converted end-of-line sequences.
+The <kbd>eol</kbd> command takes a single string for its command-line
+argument which specifies the exact pattern to use.</p>
+
+<p>The command string can be an arbitrary-length string of the following:</p>
+
+<table border=1>
+<tr><td><i>c</i><td>the character '<i>c</i>'</td></tr>
+<tr><td>\a<td>alert (or bell)</td></tr>
+<tr><td>\b<td>backspace</td></tr>
+<tr><td>\f<td>formfeed</td></tr>
+<tr><td>\n<td>newline (or line feed)</td></tr>
+<tr><td>\r<td>carriage return (cursor return to left margin)</td></tr>
+<tr><td>\t<td>horizontal tab</td></tr>
+<tr><td>\v<td>vertical tab</td></tr>
+<tr><td>\0<td>null (byte zero)</td></tr>
+<tr><td>\<i>ooo</i><td>octal number <i>ooo</i></td></tr>
+<tr><td>\x<i>hh</i><td>hexadecimal number <i>hh</i></td></tr>
+<tr><td>\\<td>back-slash</td></tr>
+</table>
+
+<p>Note that <kbd>eol</kbd> interprets input end-of-lines as a sequence of zero
+or one of \r, \n, and \0.  For example, \r\n\n\r\0\n would be interpreted as
+three EOLs as follows \r\n, \n\r\0, \n.</p>
+
+<h2>Examples</h2>
+
+<p>To convert <var>file1</var> to <var>file2</var> for use on Unix systems, run
+the following command:</p>
+
+<pre>
+eol \n &lt;file1 &gt;file2
+</pre>
+
+<p>To convert <var>file1</var> to <var>file2</var> for use on MSDOS systems, do this:</p>
+
+<pre>
+eol \r\n &lt;file1 &gt;file2
+</pre>
+
+<p>Suppose that you're monitoring output from a command that spits out lines
+every once in a while and you want each new line to beep when it comes out:</p>
+
+<pre>
+tail -f &lt;syslog | eol \a\n
+</pre>
+
+<p>If you want to double-space a text file:</p>
+
+<pre>
+eol \r\n\r\n &lt;file1 &gt;file2
+</pre>
+
+<h2>Known Bugs</h2>
+
+<p><kbd>eol</kbd> doesn't seem to flush correctly in MSDOS.  For example, if the
+eol string is "\a", the first output line will not beep until the second line
+is processed.</p>
+
+</body>
+</html>

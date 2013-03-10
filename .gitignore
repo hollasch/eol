@@ -1,0 +1,4 @@
+# Git Ignore file for 'eol'
+
+*.exe
+*.obj

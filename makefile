@@ -3,8 +3,8 @@ all: eol
 
 eol: eol.exe
 
-eol.exe: eol.c
-    cl -nologo -Ox -W4 -GF -GS eol.c
+eol.exe: eol.cpp
+    cl -nologo -Ox -W4 -GF -GS eol.cpp
 
 clean:
     -del 2>nul /q eol.obj

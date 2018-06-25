@@ -45,6 +45,7 @@ Revisions:
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <fcntl.h>
@@ -81,8 +82,6 @@ static char usage[] =
 
 
     // Function Declarations
-
-extern void exit (int exitCode);
 
 void SetBinary (FILE *handle, char *errorstr);
 int  ParseEOLSequence (char *format, char **ptr, int *len);
@@ -238,7 +237,7 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
     // Just allocate the buffer to be the same size as the format string, since
     // the actual byte length can only be shorter.
 
-    ptr = *buffer = malloc (strlen(format));
+    ptr = *buffer = (char*) malloc (strlen(format));
     *len = 0;
 
     while (*format)

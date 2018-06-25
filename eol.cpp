@@ -210,10 +210,13 @@ void WriteEOL (FILE *file, const char *buffer, const int len)
 This procedure parses the command line to build the end-of-line string.
 *****************************************************************************/
 
-#define streq(a,b)  (0 == strcmp(a,b))
+bool streq (char* a, char* b) {
+    return 0 == strcmp(a,b);
+}
 
-#define HEXVAL(c) \
-    ((('0' <= (c)) && ((c) <= '9')) ? ((c) - '0') : (10 + (c) - 'a'))
+char hexval (char c) {
+    return ('0' <= c && c <= '9') ? (c - '0') : (c + 10 - 'a');
+}
 
 int ParseEOLSequence (char *format, char **buffer, int *len)
 {
@@ -287,13 +290,15 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
                     return 0;
                 }
 
-                val = HEXVAL(tolower(*format));    // Hex Value
+                char lowerChar = static_cast<char>(tolower(*format));
+                val = hexval(lowerChar);    // Hex Value
                 ++ format;
 
                 // One more hex digit?
 
                 if (isxdigit(*format))
-                {   val = (16*val) + HEXVAL(tolower(*format));
+                {   lowerChar = static_cast<char>(tolower(*format));
+                    val = 16*val + hexval(lowerChar);
                     ++ format;
                 }
 

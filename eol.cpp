@@ -52,9 +52,8 @@ Revisions:
     // Global Variables
 
 static char usage[] = R"(
-eol  /  1996.01.17  /  Steve Hollasch
-eol :  Convert file to specified end-of-line style
-usage:  eol [eol-string]
+eol:   convert file to specified end-of-line style
+usage: eol [eol-string]
 
 eol reads lines from the standard input stream and writes them out to the
 standard output stream with the specified end-of-line style.  The single
@@ -79,6 +78,8 @@ For example, on Unix or MacOS, you'd use `eol \n`.  In MSDOS, you'd use `eol
 use `\0` or `\n\0`.  You could also double-space lines in a file by specifying
 `\r\n\r\n` for DOS (you're not restricted in the number of terminators you
 want).
+
+v1.0.0 / 2018-06-24 / https://github.com/hollasch/eol
 )";
 
 

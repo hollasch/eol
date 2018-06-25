@@ -84,7 +84,7 @@ want).
 
     // Function Declarations
 
-void SetBinary (FILE *handle, char *errorstr);
+void SetBinaryMode();
 int  ParseEOLSequence (char *format, char **ptr, int *len);
 void WriteEOL (FILE *file, const char *buffer, const int len);
 
@@ -111,8 +111,7 @@ int main (int argc, char *argv[])
     if (!ParseEOLSequence (argv[1], &eol_buf, &eol_len))
         exit (1);
 
-    SetBinary (stdin,  "Couldn't set stdin to binary mode");
-    SetBinary (stdout, "Couldn't set stdout to binary mode");
+    SetBinaryMode();
 
     while (EOF != (cc = getc(stdin))) {
 
@@ -173,13 +172,15 @@ int main (int argc, char *argv[])
 
 
 //__________________________________________________________________________________________________
-void SetBinary (FILE *handle, char *errorstr)
+void SetBinaryMode()
 {
-    // This procedure changes the mode of a file stream to binary mode.
+    // This procedure changes the mode of stdin and stdout to binary.
 
-    // Set stdin to have binary mode.
-    if (-1 == _setmode (_fileno(handle), _O_BINARY)) {
-        perror (errorstr);
+    const int stdinValue  = 0;
+    const int stdoutValue = 1;
+
+    if (-1 == _setmode(stdinValue, _O_BINARY) || -1 == _setmode(stdoutValue, _O_BINARY)) {
+        perror ("Couldn't set stdin/stdout to binary mode");
         exit (1);
     }
 }

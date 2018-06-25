@@ -43,6 +43,7 @@ Revisions:
 
 *****************************************************************************/
 
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
@@ -80,6 +81,8 @@ static char usage[] =
 
 
     // Function Declarations
+
+extern void exit (int exitCode);
 
 void SetBinary (FILE *handle, char *errorstr);
 int  ParseEOLSequence (char *format, char **ptr, int *len);
@@ -222,10 +225,10 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
 
     if (  (0 == strcmp  ("-?", format))
        || (0 == strcmp  ("/?", format))
-       || (0 == stricmp ("-h", format))
-       || (0 == stricmp ("/h", format))
-       || (0 == stricmp ("/help", format))
-       || (0 == stricmp ("-help", format))
+       || (0 == _stricmp ("-h", format))
+       || (0 == _stricmp ("/h", format))
+       || (0 == _stricmp ("/help", format))
+       || (0 == _stricmp ("-help", format))
        )
     {
        fputs (usage, stderr);

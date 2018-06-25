@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
                 }
                 break;
             }
-             
+
             default:
             {   if (flag_lf || flag_cr || flag_0)
                 {   WriteEOL (stdout, eol_buf, eol_len);

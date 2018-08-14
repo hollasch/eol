@@ -1,5 +1,4 @@
 /***************************************************************************************************
-
 EOL -- Convert/filter End-Of-Line sequences
 
 This program reads an input file and terminates each line according to the user's specification.
@@ -29,15 +28,6 @@ make a file easy to read into a C program, you could use "\0" or "\n\0".  You co
 double-space lines in a file by specifying "\r\n\r\n" for DOS (you're not restricted in the number
 of terminators you want).
 
-Revisions:
-
-    1996.01.17 Expanded termination string to include regular chars and the rest of the regular C++
-               escape sequences.  Removed "cr", "lf", and "0" (must use only "\r", "\n", or "\0").
-
-    1995.12.19 Fixed bug: missing multiple CRLF's.
-
-    1995.11.30 Initial revision tracking.
-
 ***************************************************************************************************/
 
 #include <ctype.h>
@@ -52,6 +42,7 @@ Revisions:
     // Global Variables
 
 static char usage[] = R"(
+eol v1.0.0 / 2018-08-13 / https://github.com/hollasch/eol
 eol:   convert file to specified end-of-line style
 usage: eol [eol-string]
 
@@ -79,7 +70,6 @@ use `\0` or `\n\0`.  You could also double-space lines in a file by specifying
 `\r\n\r\n` for DOS (you're not restricted in the number of terminators you
 want).
 
-v1.0.0 / 2018-06-24 / https://github.com/hollasch/eol
 )";
 
 

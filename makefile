@@ -1,15 +1,20 @@
 
-all: eol
+outDir = out
 
-eol: eol.exe
+all: $(outDir) eol
 
-eol.exe: eol.cpp
-    cl -nologo -Ox -W4 -GF -GS eol.cpp
+eol: $(outDir)\eol.exe
+
+$(outDir)\eol.exe: eol.cpp
+    cl -nologo -Ox -W4 -GF -GS -Fe: $(outDir)\eol.exe -Fo: $(outDir)\eol.obj eol.cpp
+
+$(outDir):
+    -mkdir $(outDir) >nul 2>&1
 
 clean:
-    -del 2>nul /q eol.obj
+    -del 2>nul /q $(outDir)\*.obj
 
-clobber: clean
-    -del 2>nul /q eol.exe
+clobber:
+    -rmdir /s /q $(outDir) >nul 2>&1
 
 fresh: clobber all

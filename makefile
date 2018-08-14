@@ -6,7 +6,7 @@ all: $(outDir) eol
 eol: $(outDir)\eol.exe
 
 $(outDir)\eol.exe: eol.cpp
-    cl -nologo -Ox -W4 -GF -GS -Fe: $(outDir)\eol.exe -Fo: $(outDir)\eol.obj eol.cpp
+    cl -nologo -O2 -Og -W4 -GF -GS -Fe: $(outDir)\eol.exe -Fo: $(outDir)\eol.obj eol.cpp
 
 $(outDir):
     -mkdir $(outDir) >nul 2>&1

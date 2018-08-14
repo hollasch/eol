@@ -6,8 +6,8 @@ The command-line syntax is as follows:
 
         eol [eol type]
 
-The program reads from stdin and writes to stdout.  eol understands most of the standard ways to
-terminate a line, and then appends the specified End Of Line sequence to the line on output.  The
+The program reads from stdin and writes to stdout. eol understands most of the standard ways to
+terminate a line, and then appends the specified End Of Line sequence to the line on output. The
 "eol type" argument can be any combination of the following:
 
         \0    // zero byte
@@ -23,10 +23,10 @@ terminate a line, and then appends the specified End Of Line sequence to the lin
         \\    // back-slash
         c     // the character 'c'
 
-For example, on Unix or MacOS, you'd use "eol \n".  In MSDOS, you'd use "eol \r\n".  If you want to
-make a file easy to read into a C program, you could use "\0" or "\n\0".  You could also
-double-space lines in a file by specifying "\r\n\r\n" for DOS (you're not restricted in the number
-of terminators you want).
+For example, on Unix or MacOS, you'd use "eol \n". In MSDOS, you'd use "eol \r\n". If you want to
+make a file easy to read into a C program, you could use "\0" or "\n\0". You could also double-space
+lines in a file by specifying "\r\n\r\n" for DOS (you're not restricted in the number of terminators
+you want).
 
 ***************************************************************************************************/
 
@@ -42,14 +42,14 @@ of terminators you want).
     // Global Variables
 
 static char usage[] = R"(
-eol v1.0.0 / 2018-08-13 / https://github.com/hollasch/eol
-eol:   convert file to specified end-of-line style
+eol v1.0.1 / 2018-08-13 / https://github.com/hollasch/eol
+eol:   transform line endings in stream
 usage: eol [eol-string]
 
 eol reads lines from the standard input stream and writes them out to the
-standard output stream with the specified end-of-line style.  The single
-command-line argument specifies the EOL sequence to use.  This string may be
-any combination of the following:
+standard output stream with the specified end-of-line style. The single
+command-line argument specifies the EOL sequence to use. This string may be any
+combination of the following:
 
         c       // the character 'c'
         \a     // alert (or bell)
@@ -64,11 +64,10 @@ any combination of the following:
         \xhh   // hexadecimal number
         \\     // back-slash
 
-For example, on Unix or MacOS, you'd use `eol \n`.  In MSDOS, you'd use `eol
-\r\n`.  If you want to make a file easy to read into a C program, you could
-use `\0` or `\n\0`.  You could also double-space lines in a file by specifying
-`\r\n\r\n` for DOS (you're not restricted in the number of terminators you
-want).
+For example, on Unix, MacOS or modern Windows, you'd use `eol \n`. On old MSDOS machines, you'd use
+`eol \r\n`. If you want to make a file easy to read into a C program, you could use `\0` or `\n\0`.
+You could also double-space lines in a file by specifying `\n\n` for DOS (you're not restricted
+in the number of terminators you can specify).
 
 )";
 

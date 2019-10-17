@@ -3,6 +3,7 @@ EOL Manual Page
 
 `eol` converts/filters end-of-line sequences in text files.
 
+
 Usage
 ------
     eol [eolString]
@@ -33,6 +34,7 @@ The command string can be an arbitrary-length string of the following:
 Note that `eol` interprets input end-of-lines as a sequence of zero or one of \r, \n, and \0.  For
 example, \r\n\n\r\0\n would be interpreted as three EOLs as follows \r\n, \n\r\0, \n.
 
+
 Examples
 ---------
 To convert _file1_ to _file2_ for use on Unix or Mac OS X systems, run the following command:
@@ -52,7 +54,33 @@ If you want to double-space a text file:
 
     eol \r\n\r\n <file1 >file2
 
+
 Known Bugs
 -----------
 `eol` doesn't seem to flush correctly in MSDOS. For example, if the eol string is `\a`, the first
 output line will not beep until the second line is processed.
+
+
+Building
+---------
+This project uses the `CMake` build tool. Among other sources, you can find CMake at
+https://cmake.org/.
+
+To configure this project for the default configuration for your machine, go to the root of this
+project and run the command
+
+    cmake -B build
+
+This will create a new directory, `build/`, which will contain all of the project output, and the
+configured build setup.
+
+To build, run
+
+    cmake --build build
+
+This will build the debug version. To build the release version, run
+
+    cmake --build build --config Release
+
+You will find the built executable in `build/Debug` or `build/Release`.
+

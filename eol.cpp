@@ -72,94 +72,6 @@ in the number of terminators you can specify).
 )";
 
 
-    // Function Declarations
-
-void SetBinaryMode();
-int  ParseEOLSequence (char *format, char **ptr, int *len);
-void WriteEOL (FILE *file, const char *buffer, const int len);
-
-
-//__________________________________________________________________________________________________
-int main (int argc, char *argv[])
-{
-    // The main procedure parses the command line to get the EOL sequence, and then loops through
-    // the bytes from standard input, converting EOL's as appropriate, and echoing the output to the
-    // standard output stream.
-
-    int   cc;             // Input Character
-    int   flag_lf  = 0;   // LF detected
-    int   flag_cr  = 0;   // CR detected
-    int   flag_0   = 0;   // Zero-byte detected
-    int   eol_len  = 0;   // Byte Length of End-Of-Line
-    char *eol_buf  = 0;   // End-Of-Line Buffer
-
-    if (argc != 2) {
-        fputs (usage, stdout);
-        return 1;
-    }
-
-    if (!ParseEOLSequence (argv[1], &eol_buf, &eol_len))
-        exit (1);
-
-    SetBinaryMode();
-
-    while (EOF != (cc = getc(stdin))) {
-
-        switch (cc) {
-
-            case 0: {
-                if (!flag_0)
-                    flag_0 = 1;
-                else {
-                    flag_lf = flag_cr = 0;
-                    WriteEOL (stdout, eol_buf, eol_len);
-                }
-                break;
-            }
-
-            case '\n': {
-                if (!flag_lf)
-                    flag_lf = 1;
-                else {
-                    flag_cr = flag_0 = 0;
-                    WriteEOL (stdout, eol_buf, eol_len);
-                }
-                break;
-            }
-
-            case '\r': {
-                if (!flag_cr)
-                    flag_cr = 1;
-                else {
-                    flag_lf = flag_0 = 0;
-                    WriteEOL (stdout, eol_buf, eol_len);
-                }
-                break;
-            }
-
-            default: {
-                if (flag_lf || flag_cr || flag_0) {
-                    WriteEOL (stdout, eol_buf, eol_len);
-                    flag_lf = flag_cr = flag_0 = 0;
-                }
-                fputc (cc, stdout);
-            }
-        }
-    }
-
-    if (!feof(stdin)) {
-        perror ("Read error from stdin");
-        return 1;
-    }
-
-    if (flag_lf || flag_cr || flag_0)
-        WriteEOL (stdout, eol_buf, eol_len);
-
-    free (eol_buf);
-
-    return 0;
-}
-
 
 //__________________________________________________________________________________________________
 void SetBinaryMode()
@@ -312,4 +224,87 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
     }
 
     return 1;
+}
+
+
+
+//__________________________________________________________________________________________________
+int main (int argc, char *argv[])
+{
+    // The main procedure parses the command line to get the EOL sequence, and then loops through
+    // the bytes from standard input, converting EOL's as appropriate, and echoing the output to the
+    // standard output stream.
+
+    int   cc;             // Input Character
+    int   flag_lf  = 0;   // LF detected
+    int   flag_cr  = 0;   // CR detected
+    int   flag_0   = 0;   // Zero-byte detected
+    int   eol_len  = 0;   // Byte Length of End-Of-Line
+    char *eol_buf  = 0;   // End-Of-Line Buffer
+
+    if (argc != 2) {
+        fputs (usage, stdout);
+        return 1;
+    }
+
+    if (!ParseEOLSequence (argv[1], &eol_buf, &eol_len))
+        exit (1);
+
+    SetBinaryMode();
+
+    while (EOF != (cc = getc(stdin))) {
+
+        switch (cc) {
+
+            case 0: {
+                if (!flag_0)
+                    flag_0 = 1;
+                else {
+                    flag_lf = flag_cr = 0;
+                    WriteEOL (stdout, eol_buf, eol_len);
+                }
+                break;
+            }
+
+            case '\n': {
+                if (!flag_lf)
+                    flag_lf = 1;
+                else {
+                    flag_cr = flag_0 = 0;
+                    WriteEOL (stdout, eol_buf, eol_len);
+                }
+                break;
+            }
+
+            case '\r': {
+                if (!flag_cr)
+                    flag_cr = 1;
+                else {
+                    flag_lf = flag_0 = 0;
+                    WriteEOL (stdout, eol_buf, eol_len);
+                }
+                break;
+            }
+
+            default: {
+                if (flag_lf || flag_cr || flag_0) {
+                    WriteEOL (stdout, eol_buf, eol_len);
+                    flag_lf = flag_cr = flag_0 = 0;
+                }
+                fputc (cc, stdout);
+            }
+        }
+    }
+
+    if (!feof(stdin)) {
+        perror ("Read error from stdin");
+        return 1;
+    }
+
+    if (flag_lf || flag_cr || flag_0)
+        WriteEOL (stdout, eol_buf, eol_len);
+
+    free (eol_buf);
+
+    return 0;
 }

@@ -42,7 +42,7 @@ you want).
     // Global Variables
 
 static char usage[] = R"(
-eol v1.0.1 / 2018-08-13 / https://github.com/hollasch/eol
+eol v1.0.2 / 2020-05-21 / https://github.com/hollasch/eol
 eol:   transform line endings in stream
 usage: eol [eol-string]
 
@@ -131,10 +131,10 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
 
     // Check for usage query.
 
-    if (  (format[0] == '-' || format[0] == '/')
-       && (streq("?",format+1) || strieq("h",format+1) || strieq("help",format+1))
-       )
-    {
+    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
+          || (streq(format, "--help"))
+       ) {
+
        fputs (usage, stderr);
        return 0;
     }

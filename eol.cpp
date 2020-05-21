@@ -41,8 +41,9 @@ you want).
 
     // Global Variables
 
+static char version[] = "eol v1.1.0    2020-05-21    https://github.com/hollasch/eol\n";
+
 static char usage[] = R"(
-eol v1.0.2 / 2020-05-21 / https://github.com/hollasch/eol
 eol:   transform line endings in stream
 usage: eol [eol-string]
 
@@ -74,8 +75,19 @@ in the number of terminators you can specify).
 
 
 //__________________________________________________________________________________________________
-void SetBinaryMode()
-{
+void PrintUsageAndExit(int exitCode) {
+    auto output = (exitCode == 0) ? stdout : stderr;
+
+    fputs(version, output);
+    fputs(usage, output);
+    exit(0);
+}
+
+
+
+//__________________________________________________________________________________________________
+void SetBinaryMode() {
+
     // This procedure changes the mode of stdin and stdout to binary.
 
     const int stdinValue  = 0;
@@ -89,8 +101,8 @@ void SetBinaryMode()
 
 
 //__________________________________________________________________________________________________
-void WriteEOL (FILE *file, const char *buffer, const int len)
-{
+void WriteEOL (FILE *file, const char *buffer, const int len) {
+
     // This procedure writes the specified End-Of-Line sequence to the given stream.
 
     if (1 != fwrite (buffer, len, 1, file)) {
@@ -122,8 +134,8 @@ char hexval (char c) {
 
 
 //__________________________________________________________________________________________________
-int ParseEOLSequence (char *format, char **buffer, int *len)
-{
+void ParseEOLSequence (char *format, char **buffer, int *len) {
+
     // This procedure parses the command line to build the end-of-line string.
 
     char *ptr;           // EOL String Traversal Pointer
@@ -171,8 +183,7 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
             if (!isxdigit(*++format))
             {   format[1] = 0;  // Terminate string for error output.
                 fprintf (stderr, "Error: Invalid hex digit (\\%s).\n", format-1);
-                fputs (usage, stderr);
-                return 0;
+                PrintUsageAndExit(1);
             }
 
             char lowerChar = static_cast<char>(tolower(*format));
@@ -205,22 +216,19 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
 
                 default: {
                     fprintf (stderr, "Error: Unrecognized escape (\\%c).\n", *format);
-                    fputs (usage, stderr);
-                    return 0;
+                    PrintUsageAndExit(1);
                 }
             }
             ++ format;
         }
     }
-
-    return 1;
 }
 
 
 
 //__________________________________________________________________________________________________
-int main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]) {
+
     // The main procedure parses the command line to get the EOL sequence, and then loops through
     // the bytes from standard input, converting EOL's as appropriate, and echoing the output to the
     // standard output stream.
@@ -232,10 +240,8 @@ int main (int argc, char *argv[])
     int   eol_len  = 0;   // Byte Length of End-Of-Line
     char *eol_buf  = 0;   // End-Of-Line Buffer
 
-    if (argc != 2) {
-        fputs (usage, stdout);
-        return 1;
-    }
+    if (argc != 2)
+        PrintUsageAndExit(1);
 
     // Check for usage query.
 
@@ -244,12 +250,15 @@ int main (int argc, char *argv[])
           || (streq(format, "--help"))
        ) {
 
-       fputs (usage, stderr);
-       return 0;
+        PrintUsageAndExit(0);
     }
 
-    if (!ParseEOLSequence (argv[1], &eol_buf, &eol_len))
-        exit (1);
+    if (streq(format, "--version")) {
+        fputs(version, stdout);
+        return 0;
+    }
+
+    ParseEOLSequence (argv[1], &eol_buf, &eol_len);
 
     SetBinaryMode();
 

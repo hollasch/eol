@@ -129,16 +129,6 @@ int ParseEOLSequence (char *format, char **buffer, int *len)
     char *ptr;           // EOL String Traversal Pointer
     char  cc;            // Current EOL String Character
 
-    // Check for usage query.
-
-    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
-          || (streq(format, "--help"))
-       ) {
-
-       fputs (usage, stderr);
-       return 0;
-    }
-
     // Just allocate the buffer to be the same size as the format string, since the actual byte
     // length can only be shorter.
 
@@ -245,6 +235,17 @@ int main (int argc, char *argv[])
     if (argc != 2) {
         fputs (usage, stdout);
         return 1;
+    }
+
+    // Check for usage query.
+
+    auto format = argv[1];
+    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
+          || (streq(format, "--help"))
+       ) {
+
+       fputs (usage, stderr);
+       return 0;
     }
 
     if (!ParseEOLSequence (argv[1], &eol_buf, &eol_len))

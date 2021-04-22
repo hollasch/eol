@@ -41,10 +41,10 @@ you want).
 
     // Global Variables
 
-static char version[] = "eol v1.1.0    2020-05-21    https://github.com/hollasch/eol\n";
+static auto version = "eol v1.1.0 | 2021-04-22 | https://github.com/hollasch/eol\n";
 
-static char usage[] = R"(
-eol:   transform line endings in stream
+static auto usage = R"(
+eol  : transform line endings in stream
 usage: eol [eol-string]
 
 eol reads lines from the standard input stream and writes them out to the
@@ -52,7 +52,7 @@ standard output stream with the specified end-of-line style. The single
 command-line argument specifies the EOL sequence to use. This string may be any
 combination of the following:
 
-        c       // the character 'c'
+        c      // the character 'c'
         \a     // alert (or bell)
         \b     // backspace
         \f     // formfeed
@@ -65,10 +65,11 @@ combination of the following:
         \xhh   // hexadecimal number
         \\     // back-slash
 
-For example, on Unix, MacOS or modern Windows, you'd use `eol \n`. On old MSDOS machines, you'd use
-`eol \r\n`. If you want to make a file easy to read into a C program, you could use `\0` or `\n\0`.
-You could also double-space lines in a file by specifying `\n\n` for DOS (you're not restricted
-in the number of terminators you can specify).
+For example, on Unix, MacOS or modern Windows, you'd use `eol \n`. On old MSDOS
+machines, you'd use `eol \r\n`. If you want to make a file easy to read into a C
+program, you could use `\0` or `\n\0`. You could also double-space lines in a
+file by specifying `\n\n` for DOS (you're not restricted in the number of
+terminators you can specify).
 
 )";
 
@@ -78,8 +79,8 @@ in the number of terminators you can specify).
 void PrintUsageAndExit(int exitCode) {
     auto output = (exitCode == 0) ? stdout : stderr;
 
-    fputs(version, output);
     fputs(usage, output);
+    fputs(version, output);
     exit(0);
 }
 

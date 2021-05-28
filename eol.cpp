@@ -41,7 +41,7 @@ you want).
 
     // Global Variables
 
-static auto version = "eol v1.1.0 | 2021-04-22 | https://github.com/hollasch/eol\n";
+static auto version = "eol 1.1.0 | 2021-04-22 | https://github.com/hollasch/eol\n";
 
 static auto usage = R"(
 eol  : transform line endings in stream

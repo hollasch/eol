@@ -41,7 +41,7 @@ you want).
 
     // Global Variables
 
-static auto version = "eol 1.1.0 | 2021-04-22 | https://github.com/hollasch/eol\n";
+static auto version = "eol 2.0.0-alpha | 2022-11-07 | https://github.com/hollasch/eol\n";
 
 static auto usage = R"(
 eol  : transform line endings in stream
@@ -70,6 +70,10 @@ machines, you'd use `eol \r\n`. If you want to make a file easy to read into a C
 program, you could use `\0` or `\n\0`. You could also double-space lines in a
 file by specifying `\n\n` for DOS (you're not restricted in the number of
 terminators you can specify).
+
+Input lines are recognized as terminating with any of the following sequences:
+
+    \n, \r, \r\n, \n\r, 0
 
 )";
 
@@ -234,13 +238,6 @@ int main (int argc, char *argv[]) {
     // the bytes from standard input, converting EOL's as appropriate, and echoing the output to the
     // standard output stream.
 
-    int   cc;             // Input Character
-    int   flag_lf  = 0;   // LF detected
-    int   flag_cr  = 0;   // CR detected
-    int   flag_0   = 0;   // Zero-byte detected
-    int   eol_len  = 0;   // Byte Length of End-Of-Line
-    char *eol_buf  = 0;   // End-Of-Line Buffer
-
     if (argc != 2)
         PrintUsageAndExit(1);
 
@@ -259,51 +256,42 @@ int main (int argc, char *argv[]) {
         return 0;
     }
 
+    int   eol_len = 0;  // Byte Length of End-Of-Line
+    char *eol_buf = 0;  // End-Of-Line Buffer
     ParseEOLSequence (argv[1], &eol_buf, &eol_len);
 
     SetBinaryMode();
+
+    int  cc;             // Input Character
+    char priorCRLF = 0;  // Prior EOL character, either CR or LF.
 
     while (EOF != (cc = getc(stdin))) {
 
         switch (cc) {
 
-            case 0: {
-                if (!flag_0)
-                    flag_0 = 1;
-                else {
-                    flag_lf = flag_cr = 0;
+            case 0:
+                WriteEOL (stdout, eol_buf, eol_len);
+                break;
+
+            case '\r':
+            case '\n':
+                if (priorCRLF == cc) {
                     WriteEOL (stdout, eol_buf, eol_len);
+                } else if (priorCRLF && priorCRLF != cc) {
+                    WriteEOL (stdout, eol_buf, eol_len);
+                    priorCRLF = 0;
+                } else {
+                    priorCRLF = cc;
                 }
                 break;
-            }
 
-            case '\n': {
-                if (!flag_lf)
-                    flag_lf = 1;
-                else {
-                    flag_cr = flag_0 = 0;
+            default:
+                if (priorCRLF) {
                     WriteEOL (stdout, eol_buf, eol_len);
-                }
-                break;
-            }
-
-            case '\r': {
-                if (!flag_cr)
-                    flag_cr = 1;
-                else {
-                    flag_lf = flag_0 = 0;
-                    WriteEOL (stdout, eol_buf, eol_len);
-                }
-                break;
-            }
-
-            default: {
-                if (flag_lf || flag_cr || flag_0) {
-                    WriteEOL (stdout, eol_buf, eol_len);
-                    flag_lf = flag_cr = flag_0 = 0;
+                    priorCRLF = 0;
                 }
                 fputc (cc, stdout);
-            }
+                break;
         }
     }
 
@@ -312,7 +300,7 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    if (flag_lf || flag_cr || flag_0)
+    if (priorCRLF)
         WriteEOL (stdout, eol_buf, eol_len);
 
     free (eol_buf);

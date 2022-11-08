@@ -31,13 +31,11 @@ you want).
 ***************************************************************************************************/
 
 #include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
 #include <fcntl.h>
 #include <io.h>
+#include <vector>
 
+using namespace std;
 
     // Global Variables
 
@@ -106,16 +104,16 @@ void SetBinaryMode() {
 
 
 //__________________________________________________________________________________________________
-void WriteEOL (FILE *file, const char *buffer, const int len) {
+void WriteEOL (const char *eol_sequence, size_t eol_length) {
 
     // This procedure writes the specified End-Of-Line sequence to the given stream.
 
-    if (1 != fwrite (buffer, len, 1, file)) {
+    if (1 != fwrite (eol_sequence, eol_length, 1, stdout)) {
         perror ("Write failed to output stream");
         exit (1);
     }
 
-    fflush (file);
+    fflush (stdout);
 }
 
 
@@ -139,19 +137,13 @@ char hexval (char c) {
 
 
 //__________________________________________________________________________________________________
-void ParseEOLSequence (char *format, char **buffer, int *len) {
+void ParseEOLSequence (char *format, vector<char> &eol) {
 
     // This procedure parses the command line to build the end-of-line string.
 
-    char *ptr;           // EOL String Traversal Pointer
-    char  cc;            // Current EOL String Character
+    char cc;  // Current EOL String Character
 
-    // Just allocate the buffer to be the same size as the format string, since the actual byte
-    // length can only be shorter.
-
-    *buffer = (char*) malloc (strlen(format));
-
-    for (ptr = *buffer, *len = 0;  *format;  *ptr++ = cc, ++ *len) {
+    for (;  *format;  eol.push_back(cc)) {
 
         // Regular (Non-Escaped) Character
 
@@ -256,9 +248,11 @@ int main (int argc, char *argv[]) {
         return 0;
     }
 
-    int   eol_len = 0;  // Byte Length of End-Of-Line
-    char *eol_buf = 0;  // End-Of-Line Buffer
-    ParseEOLSequence (argv[1], &eol_buf, &eol_len);
+    vector<char> eol;
+    ParseEOLSequence (argv[1], eol);
+
+    auto* eol_sequence = eol.data();
+    auto  eol_length   = eol.size();
 
     SetBinaryMode();
 
@@ -270,15 +264,15 @@ int main (int argc, char *argv[]) {
         switch (cc) {
 
             case 0:
-                WriteEOL (stdout, eol_buf, eol_len);
+                WriteEOL (eol_sequence, eol_length);
                 break;
 
             case '\r':
             case '\n':
                 if (priorCRLF == cc) {
-                    WriteEOL (stdout, eol_buf, eol_len);
+                    WriteEOL (eol_sequence, eol_length);
                 } else if (priorCRLF && priorCRLF != cc) {
-                    WriteEOL (stdout, eol_buf, eol_len);
+                    WriteEOL (eol_sequence, eol_length);
                     priorCRLF = 0;
                 } else {
                     priorCRLF = cc;
@@ -287,7 +281,7 @@ int main (int argc, char *argv[]) {
 
             default:
                 if (priorCRLF) {
-                    WriteEOL (stdout, eol_buf, eol_len);
+                    WriteEOL (eol_sequence, eol_length);
                     priorCRLF = 0;
                 }
                 fputc (cc, stdout);
@@ -301,9 +295,7 @@ int main (int argc, char *argv[]) {
     }
 
     if (priorCRLF)
-        WriteEOL (stdout, eol_buf, eol_len);
-
-    free (eol_buf);
+        WriteEOL (eol_sequence, eol_length);
 
     return 0;
 }

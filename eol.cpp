@@ -78,7 +78,7 @@ Input lines are recognized as terminating with any of the following sequences:
 
 
 //__________________________________________________________________________________________________
-void PrintUsageAndExit(int exitCode) {
+void printUsageAndExit(int exitCode) {
     auto output = (exitCode == 0) ? stdout : stderr;
 
     fputs(usage, output);
@@ -89,7 +89,7 @@ void PrintUsageAndExit(int exitCode) {
 
 
 //__________________________________________________________________________________________________
-void SetBinaryMode() {
+void setBinaryMode() {
 
     // This procedure changes the mode of stdin and stdout to binary.
 
@@ -104,7 +104,7 @@ void SetBinaryMode() {
 
 
 //__________________________________________________________________________________________________
-void WriteEOL (const char *eol_sequence, size_t eol_length) {
+void writeEOL (const char *eol_sequence, size_t eol_length) {
 
     // This procedure writes the specified End-Of-Line sequence to the given stream.
 
@@ -137,7 +137,7 @@ char hexval (char c) {
 
 
 //__________________________________________________________________________________________________
-void ParseEOLSequence (char *format, vector<char> &eol) {
+void parseEOLSequence (char *format, vector<char> &eol) {
 
     // This procedure parses the command line to build the end-of-line string.
 
@@ -180,7 +180,7 @@ void ParseEOLSequence (char *format, vector<char> &eol) {
             if (!isxdigit(*++format))
             {   format[1] = 0;  // Terminate string for error output.
                 fprintf (stderr, "Error: Invalid hex digit (\\%s).\n", format-1);
-                PrintUsageAndExit(1);
+                printUsageAndExit(1);
             }
 
             char lowerChar = static_cast<char>(tolower(*format));
@@ -213,7 +213,7 @@ void ParseEOLSequence (char *format, vector<char> &eol) {
 
                 default: {
                     fprintf (stderr, "Error: Unrecognized escape (\\%c).\n", *format);
-                    PrintUsageAndExit(1);
+                    printUsageAndExit(1);
                 }
             }
             ++ format;
@@ -231,7 +231,7 @@ int main (int argc, char *argv[]) {
     // standard output stream.
 
     if (argc != 2)
-        PrintUsageAndExit(1);
+        printUsageAndExit(1);
 
     // Check for usage query.
 
@@ -240,7 +240,7 @@ int main (int argc, char *argv[]) {
           || (streq(format, "--help"))
        ) {
 
-        PrintUsageAndExit(0);
+        printUsageAndExit(0);
     }
 
     if (streq(format, "--version")) {
@@ -249,12 +249,12 @@ int main (int argc, char *argv[]) {
     }
 
     vector<char> eol;
-    ParseEOLSequence (argv[1], eol);
+    parseEOLSequence (argv[1], eol);
 
     auto* eol_sequence = eol.data();
     auto  eol_length   = eol.size();
 
-    SetBinaryMode();
+    setBinaryMode();
 
     int  cc;             // Input Character
     char priorCRLF = 0;  // Prior EOL character, either CR or LF.
@@ -264,15 +264,15 @@ int main (int argc, char *argv[]) {
         switch (cc) {
 
             case 0:
-                WriteEOL (eol_sequence, eol_length);
+                writeEOL (eol_sequence, eol_length);
                 break;
 
             case '\r':
             case '\n':
                 if (priorCRLF == cc) {
-                    WriteEOL (eol_sequence, eol_length);
+                    writeEOL (eol_sequence, eol_length);
                 } else if (priorCRLF && priorCRLF != cc) {
-                    WriteEOL (eol_sequence, eol_length);
+                    writeEOL (eol_sequence, eol_length);
                     priorCRLF = 0;
                 } else {
                     priorCRLF = cc;
@@ -281,7 +281,7 @@ int main (int argc, char *argv[]) {
 
             default:
                 if (priorCRLF) {
-                    WriteEOL (eol_sequence, eol_length);
+                    writeEOL (eol_sequence, eol_length);
                     priorCRLF = 0;
                 }
                 fputc (cc, stdout);
@@ -295,7 +295,7 @@ int main (int argc, char *argv[]) {
     }
 
     if (priorCRLF)
-        WriteEOL (eol_sequence, eol_length);
+        writeEOL (eol_sequence, eol_length);
 
     return 0;
 }

@@ -76,16 +76,29 @@ Input lines are recognized as terminating with any of the following sequences:
 )";
 
 
+// Command Line Parameters
+
+struct EolParams {
+    bool printVersion { false };
+    bool printHelp    { false };
+    vector<char> eol  { };
+};
+
 
 //__________________________________________________________________________________________________
-void printUsageAndExit(int exitCode) {
+void printInfoAndExit(EolParams& params, int exitCode) {
     auto output = (exitCode == 0) ? stdout : stderr;
 
-    fputs(usage, output);
-    fputs(version, output);
-    exit(0);
-}
+    if (params.printHelp) {
+        fputs(usage, output);
+        params.printVersion = true;
+    }
 
+    if (| params.printVersion)
+        fputs(version, output);
+
+    exit(exitCode);
+}
 
 
 //__________________________________________________________________________________________________
@@ -123,11 +136,13 @@ bool streq (char* a, char* b) {
     return 0 == strcmp(a,b);
 }
 
+
 //__________________________________________________________________________________________________
 bool strieq (char* a, char* b) {
     // Return true if the two bytes compare as equal case-insensitive ASCII.
     return 0 == _stricmp(a,b);
 }
+
 
 //__________________________________________________________________________________________________
 char hexval (char c) {
@@ -137,13 +152,13 @@ char hexval (char c) {
 
 
 //__________________________________________________________________________________________________
-void parseEOLSequence (char *format, vector<char> &eol) {
+void parseEOLSequence (char *format, EolParams& params) {
 
     // This procedure parses the command line to build the end-of-line string.
 
     char cc;  // Current EOL String Character
 
-    for (;  *format;  eol.push_back(cc)) {
+    for (;  *format;  params.eol.push_back(cc)) {
 
         // Regular (Non-Escaped) Character
 
@@ -180,7 +195,7 @@ void parseEOLSequence (char *format, vector<char> &eol) {
             if (!isxdigit(*++format))
             {   format[1] = 0;  // Terminate string for error output.
                 fprintf (stderr, "Error: Invalid hex digit (\\%s).\n", format-1);
-                printUsageAndExit(1);
+                printInfoAndExit(params, 1);
             }
 
             char lowerChar = static_cast<char>(tolower(*format));
@@ -213,7 +228,7 @@ void parseEOLSequence (char *format, vector<char> &eol) {
 
                 default: {
                     fprintf (stderr, "Error: Unrecognized escape (\\%c).\n", *format);
-                    printUsageAndExit(1);
+                    printInfoAndExit(params, 1);
                 }
             }
             ++ format;
@@ -221,6 +236,35 @@ void parseEOLSequence (char *format, vector<char> &eol) {
     }
 }
 
+
+//__________________________________________________________________________________________________
+bool parseParameters(int argc, char *argv[], EolParams &params) {
+
+    if (argc != 2) {
+        params.printHelp = true;
+        return false;
+    }
+
+    // Check for usage query.
+
+    auto format = argv[1];
+    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
+          || (streq(format, "--help"))
+       ) {
+
+        params.printHelp = true;
+        return true;
+    }
+
+    if (streq(format, "--version")) {
+        params.printVersion = true;
+        return true;
+    }
+
+    parseEOLSequence(format, params);
+
+    return true;
+}
 
 
 //__________________________________________________________________________________________________
@@ -230,29 +274,15 @@ int main (int argc, char *argv[]) {
     // the bytes from standard input, converting EOL's as appropriate, and echoing the output to the
     // standard output stream.
 
-    if (argc != 2)
-        printUsageAndExit(1);
+    EolParams params;
 
-    // Check for usage query.
+    bool paramsValid = parseParameters(argc, argv, params);
 
-    auto format = argv[1];
-    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
-          || (streq(format, "--help"))
-       ) {
+    if (!paramsValid || params.printHelp || params.printVersion)
+        printInfoAndExit(params, paramsValid ? 0 : 1);
 
-        printUsageAndExit(0);
-    }
-
-    if (streq(format, "--version")) {
-        fputs(version, stdout);
-        return 0;
-    }
-
-    vector<char> eol;
-    parseEOLSequence (argv[1], eol);
-
-    auto* eol_sequence = eol.data();
-    auto  eol_length   = eol.size();
+    auto* eol_sequence = params.eol.data();
+    auto  eol_length   = params.eol.size();
 
     setBinaryMode();
 

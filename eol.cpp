@@ -39,7 +39,7 @@ using namespace std;
 
     // Global Variables
 
-static auto version = "eol 2.0.0-alpha | 2022-11-07 | https://github.com/hollasch/eol\n";
+static auto version = "eol 2.0.0-alpha | 2024-07-30 | https://github.com/hollasch/eol\n";
 
 static auto usage = R"(
 eol  : transform line endings in stream

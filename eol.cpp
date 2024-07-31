@@ -2,32 +2,7 @@
 EOL -- Convert/filter End-Of-Line sequences
 
 This program reads an input file and terminates each line according to the user's specification.
-The command-line syntax is as follows:
-
-        eol [eol type]
-
-The program reads from stdin and writes to stdout. eol understands most of the standard ways to
-terminate a line, and then appends the specified End Of Line sequence to the line on output. The
-"eol type" argument can be any combination of the following:
-
-        \0    // zero byte
-        \r    // carriage return
-        \n    // newline (or line feed)
-        \v    // vertical tab
-        \t    // horizontal tab
-        \f    // formfeed
-        \b    // backspace
-        \a    // alert (or bell)
-        \ooo  // octal number
-        \xhh  // hexadecimal number
-        \\    // back-slash
-        c     // the character 'c'
-
-For example, on Unix or MacOS, you'd use "eol \n". In MSDOS, you'd use "eol \r\n". If you want to
-make a file easy to read into a C program, you could use "\0" or "\n\0". You could also double-space
-lines in a file by specifying "\r\n\r\n" for DOS (you're not restricted in the number of terminators
-you want).
-
+See help text below for usage information.
 ***************************************************************************************************/
 
 #include <ctype.h>
@@ -39,7 +14,7 @@ using namespace std;
 
     // Global Variables
 
-static auto version = "eol 2.0.0-alpha | 2024-07-30 | https://github.com/hollasch/eol\n";
+static auto version = "eol 2.0.0-alpha | 2024-07-31 | https://github.com/hollasch/eol\n";
 
 static auto usage = R"(
 eol  : transform line endings in stream
@@ -59,7 +34,6 @@ combination of the following:
         \t     // horizontal tab
         \v     // vertical tab
         \0     // zero byte
-        \ooo   // octal number
         \xhh   // hexadecimal number
         \\     // back-slash
 
@@ -172,21 +146,10 @@ void parseEOLSequence (char *format, EolParams& params) {
 
         ++ format;
 
-        // Octal Number
+        if (*format == '0') {    // Zero Byte
 
-        if (('0' <= *format) && (*format <= '7')) {  // Octal Value
-
-            int val = *format++ - '0';
-
-            // Gobble one or two more octal digits until the first non-octal-digit.
-
-            if (('0' <= *format) && (*format <= '7'))
-                val = (8*val) + (*format++ - '0');
-
-            if (('0' <= *format) && (*format <= '7'))
-                val = (8*val) + (*format++ - '0');
-
-            cc = (char)val;
+            cc = 0;
+            ++ format;
 
         } else if (*format == 'x') {    // Hex Number
 

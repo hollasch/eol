@@ -94,7 +94,7 @@ void printInfoAndExit(EolParams& params, int exitCode) {
         params.printVersion = true;
     }
 
-    if (| params.printVersion)
+    if (params.printVersion)
         fputs(version, output);
 
     exit(exitCode);

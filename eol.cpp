@@ -14,16 +14,27 @@ using namespace std;
 
     // Global Variables
 
-static auto version = "eol 2.0.0-alpha | 2024-07-31 | https://github.com/hollasch/eol\n";
+static auto version = "eol 2.0.0-alpha | 2024-08-01 | https://github.com/hollasch/eol\n";
 
 static auto usage = R"(
 eol  : transform line endings in stream
-usage: eol [eol-string]
+usage: eol [-h|-?|/h|/?|--help] [--version] <eol-string>
 
 eol reads lines from the standard input stream and writes them out to the
-standard output stream with the specified end-of-line style. The single
-command-line argument specifies the EOL sequence to use. This string may be any
-combination of the following:
+standard output stream with the specified end-of-line style. Input lines are
+recognized as terminating with any of the following sequences:
+
+    \n, \r, \r\n, \n\r, 0
+
+[-h|-?|/h|/?|--help]
+  Print help and version information and exit.
+
+[--version]
+  Print version information and exit.
+
+<eol-string>
+  The single command-line argument specifies the EOL sequence to use. This
+  string may be any combination of the following:
 
         c      // the character 'c'
         \a     // alert (or bell)
@@ -37,15 +48,11 @@ combination of the following:
         \xhh   // hexadecimal number
         \\     // back-slash
 
-For example, on Unix, MacOS or modern Windows, you'd use `eol \n`. On old MSDOS
-machines, you'd use `eol \r\n`. If you want to make a file easy to read into a C
-program, you could use `\0` or `\n\0`. You could also double-space lines in a
-file by specifying `\n\n` for DOS (you're not restricted in the number of
-terminators you can specify).
-
-Input lines are recognized as terminating with any of the following sequences:
-
-    \n, \r, \r\n, \n\r, 0
+  For example, on Unix, MacOS or modern Windows, you'd use `eol \n`. On old
+  MSDOS machines, you'd use `eol \r\n`. If you want to make a file easy to read
+  into a C program, you could use `\0` or `\n\0`. You could also double-space
+  lines in a file by specifying `\n\n` for DOS (you're not restricted in the
+  number of terminators you can specify).
 
 )";
 

@@ -33,8 +33,8 @@ recognized as terminating with any of the following sequences:
   Print version information and exit.
 
 <eol-string>
-  The single command-line argument specifies the EOL sequence to use. This
-  string may be any combination of the following:
+  The required single command-line argument specifies the EOL sequence to use.
+  This string may be any combination of the following:
 
         c      // the character 'c'
         \a     // alert (or bell)
@@ -210,28 +210,28 @@ void parseEOLSequence (char *format, EolParams& params) {
 //__________________________________________________________________________________________________
 bool parseParameters(int argc, char *argv[], EolParams &params) {
 
-    if (argc != 2) {
-        params.printHelp = true;
-        return false;
-    }
-
     // Check for usage query.
 
-    auto format = argv[1];
-    if (  ((format[0] == '-' || format[0] == '/') && (streq("?",format+1) || strieq("h",format+1)))
-          || (streq(format, "--help"))
-       ) {
+    for (int argi=1;  argi < argc;  ++argi) {
+        auto* arg = argv[argi];
 
-        params.printHelp = true;
-        return true;
+        if (streq(arg, "-?") || streq(arg, "/?") || streq(arg, "-h") || streq(arg, "/h") || streq(arg, "--help")) {
+            params.printHelp = true;
+            return true;
+        }
+
+        if (streq(arg, "--version")) {
+            params.printVersion = true;
+            return true;
+        }
+
+        parseEOLSequence(arg, params);
     }
 
-    if (streq(format, "--version")) {
-        params.printVersion = true;
-        return true;
+    if (params.eol.empty()) {
+        fprintf (stderr, "Error: No EOL sequence specified. Use --help for command information.\n");
+        return false;
     }
-
-    parseEOLSequence(format, params);
 
     return true;
 }
